@@ -123,4 +123,69 @@ if (contactForm) {
         // Opcional: Limpar o formulário após enviar
         // contactForm.reset(); 
     });
+
+
+    /**
+ * 🌍 SISTEMA DE TRADUÇÃO NATIVO
+ */
+const translations = {
+    "pt": {
+        "navHome": "Home",
+        "navAbout": "Sobre mim",
+        "navSkills": "Habilidades",
+        "navProjects": "Projetos",
+        "navContact": "Contato",
+        "heroTitle": "Especialista em Automação",
+        "heroBtn": "CONTATAR"
+    },
+    "en": {
+        "navHome": "Home",
+        "navAbout": "About me",
+        "navSkills": "Skills",
+        "navProjects": "Projects",
+        "navContact": "Contact",
+        "heroTitle": "Automation Specialist",
+        "heroBtn": "HIRE ME"
+    },
+    "es": {
+        "navHome": "Inicio",
+        "navAbout": "Sobre mí",
+        "navSkills": "Habilidades",
+        "navProjects": "Proyectos",
+        "navContact": "Contacto",
+        "heroTitle": "Especialista en Automatización",
+        "heroBtn": "CONTACTAR"
+    }
+};
+
+const langSelect = document.getElementById('lang');
+
+if (langSelect) {
+    langSelect.addEventListener('change', (event) => {
+        const selectedLang = event.target.value; // Captura 'pt', 'en' ou 'es'
+        
+        // Pega todos os elementos da tela que tem o atributo data-i18n
+        const elementsToTranslate = document.querySelectorAll('[data-i18n]');
+        
+        elementsToTranslate.forEach(element => {
+            const key = element.getAttribute('data-i18n'); 
+            
+            // Se a chave existir no dicionário do idioma escolhido, troca o texto
+            if (translations[selectedLang] && translations[selectedLang][key]) {
+                element.textContent = translations[selectedLang][key];
+            }
+        });
+        
+        // Opcional: Salvar o idioma escolhido no localStorage (igual você fez no tema escuro)
+        localStorage.setItem('language', selectedLang);
+    });
+
+    // Opcional: Carregar o idioma salvo ao atualizar a página
+    const savedLang = localStorage.getItem('language');
+    if (savedLang) {
+        langSelect.value = savedLang;
+        // Dispara o evento de 'change' manualmente para traduzir a página no carregamento
+        langSelect.dispatchEvent(new Event('change')); 
+    }
+}
 }
