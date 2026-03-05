@@ -29,11 +29,13 @@ window.addEventListener('scroll', function(){
 const navToggleBtn = document.querySelector('[data-nav-toggle-btn]');
 const navbar = document.querySelector('[data-navbar]');
 
-navToggleBtn.addEventListener('click', function() { 
-    elemToggleFunc(navToggleBtn);
-    elemToggleFunc(navbar);
-    elemToggleFunc(document.body);
-});
+if (navToggleBtn && navbar) {
+    navToggleBtn.addEventListener('click', function() { 
+        elemToggleFunc(navToggleBtn);
+        elemToggleFunc(navbar);
+        elemToggleFunc(document.body);
+    });
+}
 
 /**
  * Alternar entre Habilidades e Ferramentas
@@ -42,19 +44,23 @@ const toggleBtnBox = document.querySelector('[data-toggle-box]');
 const toggleBtns = document.querySelectorAll('[data-toggle-btn]');
 const skillsBox = document.querySelector('[data-skills-box]');
 
-for(let i = 0; i < toggleBtns.length; i++){
-    toggleBtns[i].addEventListener('click', function(){
-        elemToggleFunc(toggleBtnBox);
+if (toggleBtns.length > 0) {
+    for(let i = 0; i < toggleBtns.length; i++){
+        toggleBtns[i].addEventListener('click', function(){
+            // Se o botão já está ativo, não faz nada
+            if (this.classList.contains('active')) return;
 
-        // Remove a classe active de todos e adiciona no clicado
-        for(let j = 0; j < toggleBtns.length; j++) { 
-             // Pequena correção: garante que a lógica visual de troca funcione
-             toggleBtns[j].classList.remove('active');
-        }
-        this.classList.add('active'); // Adiciona active só no botão clicado
+            elemToggleFunc(toggleBtnBox);
 
-        elemToggleFunc(skillsBox);
-    });
+            // Remove a classe active de todos e adiciona no clicado
+            for(let j = 0; j < toggleBtns.length; j++) { 
+                 toggleBtns[j].classList.remove('active');
+            }
+            this.classList.add('active');
+
+            elemToggleFunc(skillsBox);
+        });
+    }
 }
 
 /**
@@ -62,36 +68,36 @@ for(let i = 0; i < toggleBtns.length; i++){
  */
 const themeToggleBtn = document.querySelector('[data-theme-btn]');
 
-themeToggleBtn.addEventListener('click', function(){
-    elemToggleFunc(themeToggleBtn);
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', function(){
+        elemToggleFunc(themeToggleBtn);
 
-    if(themeToggleBtn.classList.contains('active')){
+        if(themeToggleBtn.classList.contains('active')){
+            document.body.classList.remove('dark-theme');
+            document.body.classList.add('light-theme');
+            localStorage.setItem('theme', 'light-theme');
+        } else {
+            document.body.classList.add('dark-theme');
+            document.body.classList.remove('light-theme');
+            localStorage.setItem('theme', 'dark-theme');
+        }
+    });
+
+    // Verifica a preferência salva ao carregar a página
+    if(localStorage.getItem('theme') === 'light-theme'){
+        themeToggleBtn.classList.add('active');
         document.body.classList.remove('dark-theme');
         document.body.classList.add('light-theme');
-        localStorage.setItem('theme', 'light-theme');
     } else {
-        document.body.classList.add('dark-theme');
+        themeToggleBtn.classList.remove('active');
         document.body.classList.remove('light-theme');
-        localStorage.setItem('theme', 'dark-theme');
+        document.body.classList.add('dark-theme');
     }
-});
-
-// Verifica a preferência salva ao carregar a página
-if(localStorage.getItem('theme') === 'light-theme'){
-    themeToggleBtn.classList.add('active');
-    document.body.classList.remove('dark-theme');
-    document.body.classList.add('light-theme');
-} else {
-    themeToggleBtn.classList.remove('active');
-    document.body.classList.remove('light-theme');
-    document.body.classList.add('dark-theme');
 }
 
 /**
  * 🚀 AUTOMAÇÃO DO FORMULÁRIO PARA WHATSAPP
- * Captura os dados e envia para o seu número
  */
-
 const contactForm = document.querySelector('.contact-form');
 
 if (contactForm) {
@@ -104,92 +110,28 @@ if (contactForm) {
         const phone = document.getElementById('phone').value;
         const message = document.getElementById('message').value;
 
-        // 2. Define o seu número de WhatsApp (formato internacional sem +)
+        // 2. Define o seu número de WhatsApp
         const myPhoneNumber = '5582993138953'; 
 
-        // 3. Cria a mensagem formatada (pula linhas com %0A)
-        const fullMessage = `*Novo Contato do Site Portfolio* 🚀%0A%0A` +
-                            `👤 *Nome:* ${name}%0A` +
-                            `📧 *Email:* ${email}%0A` +
-                            `📱 *Telefone:* ${phone}%0A%0A` +
-                            `📝 *Mensagem:*%0A${message}`;
+        // 3. Cria a mensagem bruta
+        const rawMessage = `*Novo Contato do Site Portfolio* 🚀\n\n` +
+                           `👤 *Nome:* ${name}\n` +
+                           `📧 *Email:* ${email}\n` +
+                           `📱 *Telefone:* ${phone}\n\n` +
+                           `📝 *Mensagem:*\n${message}`;
 
-        // 4. Cria o link oficial do WhatsApp API
-        const whatsappUrl = `https://api.whatsapp.com/send?phone=${myPhoneNumber}&text=${fullMessage}`;
+        // 4. Cria o link oficial do WhatsApp API codificando o texto (evita bugs)
+        const whatsappUrl = `https://api.whatsapp.com/send?phone=${myPhoneNumber}&text=${encodeURIComponent(rawMessage)}`;
 
         // 5. Abre o WhatsApp em uma nova aba
         window.open(whatsappUrl, '_blank');
         
-        // Opcional: Limpar o formulário após enviar
-        // contactForm.reset(); 
+        // 6. Limpa o formulário
+        contactForm.reset(); 
     });
-
-
-    /**
- * 🌍 SISTEMA DE TRADUÇÃO NATIVO
- */
-const translations = {
-    "pt": {
-        "navHome": "Home",
-        "navAbout": "Sobre mim",
-        "navSkills": "Habilidades",
-        "navProjects": "Projetos",
-        "navContact": "Contato",
-        "heroTitle": "Especialista em Automação",
-        "heroBtn": "CONTATAR"
-    },
-    "en": {
-        "navHome": "Home",
-        "navAbout": "About me",
-        "navSkills": "Skills",
-        "navProjects": "Projects",
-        "navContact": "Contact",
-        "heroTitle": "Automation Specialist",
-        "heroBtn": "HIRE ME"
-    },
-    "es": {
-        "navHome": "Inicio",
-        "navAbout": "Sobre mí",
-        "navSkills": "Habilidades",
-        "navProjects": "Proyectos",
-        "navContact": "Contacto",
-        "heroTitle": "Especialista en Automatización",
-        "heroBtn": "CONTACTAR"
-    }
-};
-
-const langSelect = document.getElementById('lang');
-
-if (langSelect) {
-    langSelect.addEventListener('change', (event) => {
-        const selectedLang = event.target.value; // Captura 'pt', 'en' ou 'es'
-        
-        // Pega todos os elementos da tela que tem o atributo data-i18n
-        const elementsToTranslate = document.querySelectorAll('[data-i18n]');
-        
-        elementsToTranslate.forEach(element => {
-            const key = element.getAttribute('data-i18n'); 
-            
-            // Se a chave existir no dicionário do idioma escolhido, troca o texto
-            if (translations[selectedLang] && translations[selectedLang][key]) {
-                element.textContent = translations[selectedLang][key];
-            }
-        });
-        
-        // Opcional: Salvar o idioma escolhido no localStorage (igual você fez no tema escuro)
-        localStorage.setItem('language', selectedLang);
-    });
-
-    // Opcional: Carregar o idioma salvo ao atualizar a página
-    const savedLang = localStorage.getItem('language');
-    if (savedLang) {
-        langSelect.value = savedLang;
-        // Dispara o evento de 'change' manualmente para traduzir a página no carregamento
-        langSelect.dispatchEvent(new Event('change')); 
-    }
 }
 
-    /**
+/**
  * 🌍 SISTEMA DE TRADUÇÃO COMPLETO
  */
 const translations = {
@@ -308,5 +250,3 @@ if (langSelect) {
         langSelect.dispatchEvent(new Event('change')); 
     }
 }
-}
-
